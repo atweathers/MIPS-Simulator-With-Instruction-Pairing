@@ -46,6 +46,14 @@ unsigned int mar,
 int 	 sign_ext,
 			 ram_end = 0;
 
+int		numIssueCycles = 0,
+			numDoubleIssue = 0,
+			numControlStops = 0,
+			numStructuralStops = 0,
+			numDataDependencyStops = 0,
+			numDataAndStructuralStops = 0;
+
+
 bool   zeroAttempt = false;
 bool	 doubleIssue = false;
 
@@ -598,33 +606,129 @@ void printMemory()
 	}
 }
 
+void printInstructionCounts(int numLoadsAndStores, int numJumpsAndBranches, int totalMemAccess)
+{
+	int totalInstClassCounts = numAlu + numLoadsAndStores + numJumpsAndBranches;
+	cout << "\r\n";
+
+	cout << "instruction class counts (omits hlt instruction)" << "\r\n";
+
+	cout << "  alu ops         ";
+	cout << setfill(' ') << setw(5) << numAlu;
+	cout << "\r\n";
+
+	cout << "  loads/stores    ";
+	cout << setfill(' ') << setw(5) << numLoadsAndStores;
+	cout << "\r\n";
+
+	cout << "  jumps/branches  ";
+	cout << setfill(' ') << setw(5) << numJumpsAndBranches;
+	cout << "\r\n";
+
+	cout << "total             ";
+	cout << setfill(' ') << setw(5) << totalInstClassCounts;
+	cout << "\r\n";
+
+	cout << "\r\n";
+
+}
+
+void printMemoryCounts(int totalMemAccess)
+{
+	cout << "memory access counts (omits hlt instruction)" << "\r\n";
+
+	cout << "  inst. fetches   ";
+	cout << setfill(' ') << setw(5) << numInstFetch;
+	cout << "\r\n";
+
+	cout << "  loads           ";
+	cout << setfill(' ') << setw(5) << numLoads;
+	cout << "\r\n";
+
+	cout << "  stores          ";
+	cout << setfill(' ') << setw(5) << numStores;
+	cout << "\r\n";
+
+	cout << "total             ";
+	cout << setfill(' ') << setw(5) << totalMemAccess;
+	cout << "\r\n";
+
+	cout << "\r\n";
+
+}
+
+void printControlCounts(int numJumpsAndBranches)
+{
+	cout << "transfer of control counts" << "\r\n";
+	cout << "  jumps           ";
+	cout << setfill(' ') << setw(5) << numJumps;
+	cout << "\r\n";
+
+	cout << "  jump-and-links  ";
+	cout << setfill(' ') << setw(5) << numJumpsAndLinks;
+	cout << "\r\n";
+
+	cout << "  taken branches  ";
+	cout << setfill(' ') << setw(5) << numTakenBranches;
+	cout << "\r\n";
+
+	cout << "  untaken branches";
+	cout << setfill(' ') << setw(5) << numUnTakenBranches;
+	cout << "\r\n";
+
+	cout << "total             ";
+	cout << setfill(' ') << setw(5) << numJumpsAndBranches;
+	cout << "\r\n";
+
+	cout << "\r\n";
+}
+
+void printPairingCounts()
+{
+	cout << "instruction pairing counts (includes hlt instruction)\r\n";
+
+	cout << "  issue cycles    ";
+	cout << setw(5) << setfill(' ') << numIssueCycles;
+	cout << "\r\n";
+
+	double percentDoubleIssue = (static_cast<double>(numDoubleIssue) / static_cast<double>(numIssueCycles)) * 100;
+	cout << "  double issues   ";
+	cout << setw(5) << setfill(' ') << numDoubleIssue;
+	cout << " ( " << setprecision(3) << percentDoubleIssue;
+	cout << " percent of issue cycles)";
+	cout << "\r\n";
+
+	cout << "  control stops   ";
+	cout << setw(5) << setfill(' ') << numControlStops;
+	cout << "\r\n";
+
+	cout << "  structural stops";
+	cout << setw(5) << setfill(' ') << numStructuralStops;
+	cout << " (" << numDataAndStructuralStops;
+	cout << " of which would also stop on a data dep.)";
+	cout << "\r\n";
+
+	cout << "  data dep. stops ";
+	cout << setw(5) << setfill(' ') << numDataDependencyStops;
+	cout << "\r\n";
+
+}
+
 void writeOutput()
 {
 	cout << "\r\n";
 	cout << dec;
 	int numJumpsAndBranches = numTakenBranches + numUnTakenBranches + numJumps + numJumpsAndLinks;
 	int numLoadsAndStores = numStores + numLoads;
-	int totalInstClassCounts = numAlu + numLoadsAndStores + numJumpsAndBranches;
 	int totalMemAccess = numLoadsAndStores + numInstFetch;
-	cout << "\r\n";
-	cout << "instruction class counts (omits hlt instruction)" << "\r\n";
-	cout << "  alu ops            " << setfill(' ') << setw(2) << numAlu << "\r\n";
-	cout << "  loads/stores       " << setfill(' ') << setw(2) << numLoadsAndStores << "\r\n";
-	cout << "  jumps/branches     " << setfill(' ') << setw(2) << numJumpsAndBranches << "\r\n";
-	cout << "total                " << setfill(' ') << setw(2) << totalInstClassCounts << "\r\n" << "\r\n";
 
-	cout << "memory access counts (omits hlt instruction)" << "\r\n";
-	cout << "  inst. fetches      " << setfill(' ') << setw(2) << numInstFetch << "\r\n";
-	cout << "  loads              " << setfill(' ') << setw(2) << numLoads << "\r\n";
-	cout << "  stores             " << setfill(' ') << setw(2) << numStores << "\r\n";
-	cout << "total                " << setfill(' ') << setw(2) << totalMemAccess << "\r\n" << "\r\n";
+	printInstructionCounts(numLoadsAndStores, numJumpsAndBranches, totalMemAccess);
 
-	cout << "transfer of control counts" << "\r\n";
-	cout << "  jumps              " << setfill(' ') << setw(2) << numJumps << "\r\n";
-	cout << "  jump-and-links     " << setfill(' ') << setw(2) << numJumpsAndLinks << "\r\n";
-	cout << "  taken branches     " << setfill(' ') << setw(2) << numTakenBranches << "\r\n";
-	cout << "  untaken branches   " << setfill(' ') << setw(2) << numUnTakenBranches << "\r\n";
-	cout << "total                " << setfill(' ') << setw(2) << numJumpsAndBranches << "\r\n";
+	printMemoryCounts(totalMemAccess);
+
+	printControlCounts(numJumpsAndBranches);
+
+	printPairingCounts();
 
 
 
@@ -663,12 +767,14 @@ bool checkRAW(int ir2, int storeRegister)
 	{
 		if(doubleIssue)
 		{
+			numDataDependencyStops++;
 			doubleIssue = false;
 			issueStatement = "// data dependency stop";
 			return true;
 		}
 		else
 		{
+			numDataAndStructuralStops++;
 			issueStatement += " (also data dep.)";
 			return true;
 		}
@@ -699,11 +805,13 @@ void checkWAW(int ir2, int storeRegister, int opcode2)
 	{
 		if(doubleIssue)
 		{
+			numDataDependencyStops++;
 			doubleIssue = false;
 			issueStatement = "// data dependency stop";
 		}
 		else
 		{
+			numDataAndStructuralStops++;
 			issueStatement += " (also data dep.)";
 		}
 	}
@@ -717,6 +825,7 @@ void checkStructural(int ir2, int opcode1, int opcode2)
 	{
 		if(opcode2 == 0x23 || opcode2 == 0x2b)
 		{
+			numStructuralStops++;
 			doubleIssue = false;
 			issueStatement = "// structural stop";
 		}
@@ -730,6 +839,7 @@ void checkStructural(int ir2, int opcode1, int opcode2)
 			int func2 = ir2 & 0x2f; // clamps to the 6 bit funct
 			if(func2 == 0x02)
 			{
+				numStructuralStops++;
 				doubleIssue = false;
 				issueStatement = "// structural stop";
 			}
@@ -743,12 +853,14 @@ void checkControl(int ir2, int opcode1, int opcode2)
 	// blez, or bne
 	if(opcode1 == 0x04 || opcode1 == 0x07 || opcode1 == 0x06 || opcode1 == 0x05)
 	{
+		numControlStops++;
 		doubleIssue = false;
 		issueStatement = "// control stop";
 	}
 	//Checks for control stop occuring when issue slot one holds hlt, j, or jal
 	if(ir == 0 || opcode1 == 0x02 || opcode1 == 0x03)
 	{
+		numControlStops++;
 		doubleIssue = false;
 		issueStatement = "// control stop";
 	}
@@ -757,6 +869,7 @@ void checkControl(int ir2, int opcode1, int opcode2)
 	{
 		if(funct == 0x09 || funct == 0x08)
 		{
+			numControlStops++;
 			doubleIssue = false;
 			issueStatement = "// control stop";
 		}
@@ -830,6 +943,7 @@ int main()
 
   while(halt == 0)
 	{
+		numIssueCycles++;
 		fetch();
 		inst = decode();
 		determineSecondSlot();
@@ -837,6 +951,7 @@ int main()
 		//If double issue is possible, use it.
 		if(doubleIssue)
 		{
+			numDoubleIssue++;
 			doubleIssue = false;
 			fetch();
 			inst2 = decode();
