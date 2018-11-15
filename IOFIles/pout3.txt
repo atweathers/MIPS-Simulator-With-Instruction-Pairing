@@ -1,0 +1,102 @@
+contents of memory
+addr value
+000: 8c010021
+001: 8c020022
+002: 00221821
+003: ac030023
+004: 24230004
+005: ac030024
+006: 2423ffff
+007: ac030025
+008: 3c048451
+009: ac040026
+00a: 70221802
+00b: ac030027
+00c: 00221827
+00d: ac030028
+00e: 00221825
+00f: ac030029
+010: 00011880
+011: ac03002a
+012: 28231234
+013: ac03002b
+014: 28031234
+015: ac03002c
+016: 00041883
+017: ac03002d
+018: 00041882
+019: ac03002e
+01a: 00221823
+01b: ac03002f
+01c: 00221826
+01d: ac030030
+01e: 3823ffff
+01f: ac030031
+020: 00000000
+021: 01234567
+022: 89abcdef
+023: 00000000
+024: 00000000
+025: 00000000
+026: 00000000
+027: 00000000
+028: 00000000
+029: 00000000
+02a: 00000000
+02b: 00000000
+02c: 00000000
+02d: 00000000
+02e: 00000000
+02f: 00000000
+030: 00000000
+031: 00000000
+
+simple MIPS-like machine with instruction pairing
+  (all values are shown in hexadecimal)
+
+instruction pairing analysis
+000: lw                 // structural stop
+001: lw                 // data dependency stop
+002: addu               // data dependency stop
+003: sw    004: addiu   // -- double issue --
+005: sw    006: addiu   // -- double issue --
+007: sw    008: lui     // -- double issue --
+009: sw    00a: mul     // -- double issue --
+00b: sw    00c: nor     // -- double issue --
+00d: sw    00e: or      // -- double issue --
+00f: sw    010: sll     // -- double issue --
+011: sw    012: slti    // -- double issue --
+013: sw    014: slti    // -- double issue --
+015: sw    016: sra     // -- double issue --
+017: sw    018: srl     // -- double issue --
+019: sw    01a: subu    // -- double issue --
+01b: sw    01c: xor     // -- double issue --
+01d: sw    01e: xori    // -- double issue --
+01f: sw    020: hlt     // -- double issue --
+
+
+instruction class counts (omits hlt instruction)
+  alu ops            15
+  loads/stores       17
+  jumps/branches      0
+total                32
+
+memory access counts (omits hlt instruction)
+  inst. fetches      32
+  loads               2
+  stores             15
+total                49
+
+transfer of control counts
+  jumps               0
+  jump-and-links      0
+  taken branches      0
+  untaken branches    0
+total                 0
+
+instruction pairing counts (includes hlt instruction)
+  issue cycles       18
+  double issues      15 ( 83.3 percent of issue cycles)
+  control stops       0
+  structural stops    1 (0 of which would also stop on a data dep.)
+  data dep. stops     2
