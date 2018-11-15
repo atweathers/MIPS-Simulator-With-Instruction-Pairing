@@ -750,6 +750,7 @@ void (* determineSecondSlot() ) ()
 	mdr = ram[mar];
 	ir2 = mdr;
 	doubleIssue = true;
+	issueStatement = "// -- double issue --";
 	unsigned int opcode1 = (ir >> 26) & 0x3f; // clamp to 6-bit opcode field
 	unsigned int opcode2 = (ir2 >> 26) & 0x3f; // clamp to 6-bit opcode field
 
