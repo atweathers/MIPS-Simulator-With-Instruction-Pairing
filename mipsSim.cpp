@@ -46,7 +46,10 @@ unsigned int mar,
 int 	 sign_ext,
 			 ram_end = 0;
 
-bool   zeroAttempt=false;
+bool   zeroAttempt = false;
+bool	 doubleIssue = false;
+
+string issueStatement;
 
 map<unsigned int, string> opcodeMap;
 
@@ -77,7 +80,8 @@ void fillMap()
 	opcodeMap[0x0e] = "i";
 }
 
-void checkRegZero(unsigned int reg){
+void checkRegZero(unsigned int reg)
+{
 	if(reg == 0)
 		zeroAttempt=true;
 }
@@ -409,7 +413,7 @@ void xori()
 
 
 
-//Fetches the next instruction.
+//Fetches the next instruction for first issue slot.
 void fetch()
 {
   mar = pc;
@@ -660,22 +664,148 @@ void gatherInput()
 	cout << "pc   result of instruction at that location\r\n";
 }
 
+
+//Checks for data dependencies
+void checkConflicts(int ir2, int storeRegister)
+{
+	int rs2, rt2;
+
+	rs2 = (ir2 >> 21) & 0x1f; // clamp to the 5 bit rs
+	rt2 = (ir2 >> 16) & 0x001f; // clamp to the 5 bit rt
+
+	//Checks for a data dependency
+	if(rs2 == storeRegister || rt2 == storeRegister)
+	{
+		if(doubleIssue)
+		{
+			doubleIssue = false;
+			issueStatement = "// data dependency stop";
+		}
+		else
+		{
+			issueStatement += " (also data dep.)";
+		}
+	}
+
+}
+
+void checkStructural(int ir2, int opcode1, int opcode2)
+{
+	//Checks for a structural stop occuring
+	//where both slots would be lw/sw instructions
+	if(opcode1 == 0x23 || opcode1 == 0x2b)
+	{
+		if(opcode1 == 0x23 || opcode1 == 0x2b)
+		{
+			doubleIssue = false;
+			issueStatement = "// structural stop";
+		}
+	}
+	//Checks for a structural stop occuring
+	//where both slots would be mul instructions
+	if(opcode1 == 0x1c)
+	{
+		if(funct == 0x02 && opcode2 == 0x1c)
+		{
+			int func2 = ir2 & 0x2f; // clamps to the 6 bit funct
+			if(func2 == 0x02)
+			{
+				doubleIssue = false;
+				issueStatement = "// structural stop";
+			}
+		}
+	}
+}
+
+void checkControl(int ir2, int opcode1, int opcode2)
+{
+	//Checks for control stop occuring when issue slot one holds beq, bgtz,
+	// blez, or bne
+	if(opcode1 == 0x04 || opcode1 == 0x07 || opcode1 == 0x06 || opcode1 == 0x05)
+	{
+		doubleIssue = false;
+		issueStatement = "// control stop";
+	}
+	//Checks for control stop occuring when issue slot one holds hlt, j, or jal
+	if(ir == 0 || opcode1 == 0x02 || opcode1 == 0x03)
+	{
+		doubleIssue = false;
+		issueStatement = "// control stop";
+	}
+	//Checks for control stop occuring when issue slot one holds jr or jalr
+	if(opcode1 == 0x00)
+	{
+		if(funct == 0x09 || funct == 0x08)
+		{
+			doubleIssue = false;
+			issueStatement = "// control stop";
+		}
+	}
+}
+
+void (* determineSecondSlot() ) ()
+{
+	int ir2, rd2,	rs2, rt2,	shift2,	funct2,	pc2 = pc, storeRegister;
+	mar = pc2;
+	mdr = ram[mar];
+	ir2 = mdr;
+	doubleIssue = true;
+	unsigned int opcode1 = (ir >> 26) & 0x3f; // clamp to 6-bit opcode field
+	unsigned int opcode2 = (ir2 >> 26) & 0x3f; // clamp to 6-bit opcode field
+
+	checkStructural(ir2, opcode1, opcode2);
+
+	checkControl(ir2, opcode1, opcode2);
+
+	//Tries to find opcode1 in the map
+	if(opcodeMap.find(opcode1) != opcodeMap.end())
+	{
+		//Finds if the function is R-type, if it is, sets storeRegister to rd
+		if(opcodeMap.find(opcode1)->second.compare("r"))
+		{
+			checkConflicts(ir2, rd);
+		}
+		//Otherwise, storeRegister is set to rt
+		else
+		{
+			checkConflicts(ir2, rt);
+		}
+	}
+
+
+}
+
+
 int main()
 {
 	initiliazeRam();
 	fillMap();
 	gatherInput();
 	void (* inst)();
+	void (* inst2)();
 
   while(halt == 0)
 	{
 		fetch();
 		inst = decode();
+		determineSecondSlot();
 		(*inst)();
+		//If double issue is possible, use it.
+		if(doubleIssue)
+		{
+			doubleIssue = false;
+			fetch();
+			inst2 = decode();
+			(*inst2)();
+		}
+		//Otherwise, correct the print spacing
+		else
+		{
+			cout << "  " << issueStatement << "\r\n";
+		}
 		if(zeroAttempt)
 		{
 			zeroAttempt = false;
-			cout << "***** - register r[0] not allowed to change; reset to 0\r\n";
 			registerArray[0] = 0;
 		}
 	}
