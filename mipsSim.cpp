@@ -695,7 +695,7 @@ void printPairingCounts()
 	double percentDoubleIssue = static_cast<double>(numDoubleIssue);
 	percentDoubleIssue /= static_cast<double>(numIssueCycles);
 	percentDoubleIssue *= 100;
-	
+
 	cout << "  double issues   ";
 	cout << setw(5) << setfill(' ') << numDoubleIssue;
 	cout << " ( " << setprecision(3) << percentDoubleIssue;
@@ -917,7 +917,7 @@ void checkDataHazard(int ir2, int opcode1, int opcode2)
 	}
 }
 
-void (* determineSecondSlot() ) ()
+void determineSecondSlot()
 {
 	int ir2, rd2,	rs2, rt2,	shift2,	funct2,	pc2 = pc, storeRegister;
 	mar = pc2;
