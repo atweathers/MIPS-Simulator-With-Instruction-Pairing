@@ -601,12 +601,13 @@ void printMemory()
 		if(ram[i] != INT_MAX)
 		{
 			cout << setw(3) << setfill('0') << i;
-			cout << ": " << setw(8) << setfill('0') << hex << noshowbase << ram[i] << "\r\n";
+			cout << ": ";
+			cout << setw(8) << setfill('0') << hex << noshowbase << ram[i] << "\r\n";
 		}
 	}
 }
 
-void printInstructionCounts(int numLoadsAndStores, int numJumpsAndBranches, int totalMemAccess)
+void printInstCounts(int numLoadsAndStores, int numJumpsAndBranches, int totalMemAccess)
 {
 	int totalInstClassCounts = numAlu + numLoadsAndStores + numJumpsAndBranches;
 	cout << "\r\n";
@@ -691,7 +692,10 @@ void printPairingCounts()
 	cout << setw(5) << setfill(' ') << numIssueCycles;
 	cout << "\r\n";
 
-	double percentDoubleIssue = (static_cast<double>(numDoubleIssue) / static_cast<double>(numIssueCycles)) * 100;
+	double percentDoubleIssue = static_cast<double>(numDoubleIssue);
+	percentDoubleIssue /= static_cast<double>(numIssueCycles);
+	percentDoubleIssue *= 100;
+	
 	cout << "  double issues   ";
 	cout << setw(5) << setfill(' ') << numDoubleIssue;
 	cout << " ( " << setprecision(3) << percentDoubleIssue;
@@ -718,11 +722,12 @@ void writeOutput()
 {
 	cout << "\r\n";
 	cout << dec;
-	int numJumpsAndBranches = numTakenBranches + numUnTakenBranches + numJumps + numJumpsAndLinks;
+	int numJumpsAndBranches = numTakenBranches + numUnTakenBranches;
+	numJumpsAndBranches += numJumps + numJumpsAndLinks;
 	int numLoadsAndStores = numStores + numLoads;
 	int totalMemAccess = numLoadsAndStores + numInstFetch;
 
-	printInstructionCounts(numLoadsAndStores, numJumpsAndBranches, totalMemAccess);
+	printInstCounts(numLoadsAndStores, numJumpsAndBranches, totalMemAccess);
 
 	printMemoryCounts(totalMemAccess);
 
