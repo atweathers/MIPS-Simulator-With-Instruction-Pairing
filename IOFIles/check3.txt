@@ -1,0 +1,162 @@
+contents of memory
+addr value
+000: 8c010021
+001: 8c020022
+002: 00221821
+003: ac030023
+004: 24230004
+005: ac030024
+006: 2423ffff
+007: ac030025
+008: 3c048451
+009: ac040026
+00a: 70221802
+00b: ac030027
+00c: 00221827
+00d: ac030028
+00e: 00221825
+00f: ac030029
+010: 00011880
+011: ac03002a
+012: 28231234
+013: ac03002b
+014: 28031234
+015: ac03002c
+016: 00041883
+017: ac03002d
+018: 00041882
+019: ac03002e
+01a: 00221823
+01b: ac03002f
+01c: 00221826
+01d: ac030030
+01e: 3823ffff
+01f: ac030031
+020: 00000000
+021: 01234567
+022: 89abcdef
+023: 00000000
+024: 00000000
+025: 00000000
+026: 00000000
+027: 00000000
+028: 00000000
+029: 00000000
+02a: 00000000
+02b: 00000000
+02c: 00000000
+02d: 00000000
+02e: 00000000
+02f: 00000000
+030: 00000000
+031: 00000000
+
+behavioral simulation of simple MIPS-like machine
+  (all values are shown in hexadecimal)
+
+pc   result of instruction at that location
+000: lw    - register r[1] now contains 0x01234567
+001: lw    - register r[2] now contains 0x89abcdef
+002: addu  - register r[3] now contains 0x8acf1356
+003: sw    - register r[3] value stored in memory
+004: addiu - register r[3] now contains 0x0123456b
+005: sw    - register r[3] value stored in memory
+006: addiu - register r[3] now contains 0x01234566
+007: sw    - register r[3] value stored in memory
+008: lui   - register r[4] now contains 0x84510000
+009: sw    - register r[4] value stored in memory
+00a: mul   - register r[3] now contains 0xc94e4629
+00b: sw    - register r[3] value stored in memory
+00c: nor   - register r[3] now contains 0x76543210
+00d: sw    - register r[3] value stored in memory
+00e: or    - register r[3] now contains 0x89abcdef
+00f: sw    - register r[3] value stored in memory
+010: sll   - register r[3] now contains 0x048d159c
+011: sw    - register r[3] value stored in memory
+012: slti  - register r[3] now contains 0x00000000
+013: sw    - register r[3] value stored in memory
+014: slti  - register r[3] now contains 0x00000001
+015: sw    - register r[3] value stored in memory
+016: sra   - register r[3] now contains 0xe1144000
+017: sw    - register r[3] value stored in memory
+018: srl   - register r[3] now contains 0x21144000
+019: sw    - register r[3] value stored in memory
+01a: subu  - register r[3] now contains 0x77777778
+01b: sw    - register r[3] value stored in memory
+01c: xor   - register r[3] now contains 0x88888888
+01d: sw    - register r[3] value stored in memory
+01e: xori  - register r[3] now contains 0x0123ba98
+01f: sw    - register r[3] value stored in memory
+020: hlt
+
+contents of memory
+addr value
+000: 8c010021
+001: 8c020022
+002: 00221821
+003: ac030023
+004: 24230004
+005: ac030024
+006: 2423ffff
+007: ac030025
+008: 3c048451
+009: ac040026
+00a: 70221802
+00b: ac030027
+00c: 00221827
+00d: ac030028
+00e: 00221825
+00f: ac030029
+010: 00011880
+011: ac03002a
+012: 28231234
+013: ac03002b
+014: 28031234
+015: ac03002c
+016: 00041883
+017: ac03002d
+018: 00041882
+019: ac03002e
+01a: 00221823
+01b: ac03002f
+01c: 00221826
+01d: ac030030
+01e: 3823ffff
+01f: ac030031
+020: 00000000
+021: 01234567
+022: 89abcdef
+023: 8acf1356
+024: 0123456b
+025: 01234566
+026: 84510000
+027: c94e4629
+028: 76543210
+029: 89abcdef
+02a: 048d159c
+02b: 00000000
+02c: 00000001
+02d: e1144000
+02e: 21144000
+02f: 77777778
+030: 88888888
+031: 0123ba98
+
+instruction class counts (omits hlt instruction)
+  alu ops            15
+  loads/stores       17
+  jumps/branches      0
+total                32
+
+memory access counts (omits hlt instruction)
+  inst. fetches      32
+  loads               2
+  stores             15
+total                49
+
+transfer of control counts
+  jumps               0
+  jump-and-links      0
+  taken branches      0
+  untaken branches    0
+total                 0

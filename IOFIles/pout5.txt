@@ -1,0 +1,60 @@
+contents of memory
+addr value
+000: 24010080
+001: 24020082
+002: 8c03000f
+003: 8c040010
+004: 00242821
+005: 00453021
+006: 00223823
+007: 70224002
+008: 70684802
+009: 14220001
+00a: 00000000
+00b: 00225021
+00c: 154a0001
+00d: 00000000
+00e: 00000000
+00f: 00000001
+010: 00000002
+
+simple MIPS-like machine with instruction pairing
+  (all values are shown in hexadecimal)
+
+instruction pairing analysis
+000: addiu 001: addiu   // -- double issue --
+002: lw                 // structural stop
+003: lw                 // data dependency stop
+004: addu               // data dependency stop
+005: addu  006: subu    // -- double issue --
+007: mul                // structural stop (also data dep.)
+008: mul   009: bne     // -- double issue --
+00b: addu               // data dependency stop
+00c: bne                // control stop
+00d: hlt                // control stop
+
+instruction class counts (omits hlt instruction)
+  alu ops             8
+  loads/stores        2
+  jumps/branches      2
+total                12
+
+memory access counts (omits hlt instruction)
+  inst. fetches      12
+  loads               2
+  stores              0
+total                14
+
+transfer of control counts
+  jumps               0
+  jump-and-links      0
+  taken branches      1
+  untaken branches    1
+total                 2
+
+instruction pairing counts (includes hlt instruction)
+  issue cycles       10
+  double issues       3 ( 30.0 percent of issue cycles)
+  control stops       2
+  structural stops    2 (1 of which would also stop on a data dep.)
+  data dep. stops     3

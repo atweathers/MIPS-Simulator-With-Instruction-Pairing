@@ -1,0 +1,133 @@
+contents of memory
+addr value
+000: 8c01001b
+001: 1c200002
+002: 8c02001c
+003: ac020023
+004: 18200002
+005: 8c02001d
+006: ac020024
+007: 10220002
+008: 8c02001e
+009: ac020025
+00a: 0800000d
+00b: 8c02001f
+00c: ac020026
+00d: 0c000014
+00e: 8c040020
+00f: 00802809
+010: 08000012
+011: 00000000
+012: 1422fffe
+013: 00000000
+014: 8c030021
+015: ac030027
+016: 03e00008
+017: 8c000022
+018: ac000028
+019: 00a00008
+01a: 00000000
+01b: 00000005
+01c: 00000006
+01d: 00000007
+01e: 00000008
+01f: 00000009
+020: 00000017
+021: 0000000a
+022: 0000000b
+023: 00000000
+024: 00000000
+025: 00000000
+026: 00000000
+027: 00000000
+028: 00000000
+
+behavioral simulation of simple MIPS-like machine
+  (all values are shown in hexadecimal)
+
+pc   result of instruction at that location
+000: lw    - register r[1] now contains 0x00000005
+001: bgtz  - branch taken to 0x00000004
+004: blez  - branch untaken
+005: lw    - register r[2] now contains 0x00000007
+006: sw    - register r[2] value stored in memory
+007: beq   - branch untaken
+008: lw    - register r[2] now contains 0x00000008
+009: sw    - register r[2] value stored in memory
+00a: j     - jump to 0x0000000d
+00d: jal   - jump to 0x00000014
+014: lw    - register r[3] now contains 0x0000000a
+015: sw    - register r[3] value stored in memory
+016: jr    - jump to 0x0000000e
+00e: lw    - register r[4] now contains 0x00000017
+00f: jalr  - jump to 0x00000017
+017: lw    - register r[0] now contains 0x0000000b
+018: sw    - register r[0] value stored in memory
+019: jr    - jump to 0x00000010
+010: j     - jump to 0x00000012
+012: bne   - branch taken to 0x00000011
+011: hlt
+
+contents of memory
+addr value
+000: 8c01001b
+001: 1c200002
+002: 8c02001c
+003: ac020023
+004: 18200002
+005: 8c02001d
+006: ac020024
+007: 10220002
+008: 8c02001e
+009: ac020025
+00a: 0800000d
+00b: 8c02001f
+00c: ac020026
+00d: 0c000014
+00e: 8c040020
+00f: 00802809
+010: 08000012
+011: 00000000
+012: 1422fffe
+013: 00000000
+014: 8c030021
+015: ac030027
+016: 03e00008
+017: 8c000022
+018: ac000028
+019: 00a00008
+01a: 00000000
+01b: 00000005
+01c: 00000006
+01d: 00000007
+01e: 00000008
+01f: 00000009
+020: 00000017
+021: 0000000a
+022: 0000000b
+023: 00000000
+024: 00000007
+025: 00000008
+026: 00000000
+027: 0000000a
+028: 00000000
+033: 0000000b
+
+instruction class counts (omits hlt instruction)
+  alu ops             0
+  loads/stores       10
+  jumps/branches     10
+total                20
+
+memory access counts (omits hlt instruction)
+  inst. fetches      20
+  loads               6
+  stores              4
+total                30
+
+transfer of control counts
+  jumps               4
+  jump-and-links      2
+  taken branches      2
+  untaken branches    2
+total                10

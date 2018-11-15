@@ -1,0 +1,76 @@
+contents of memory
+addr value
+000: 24010080
+001: 24020082
+002: 8c03000f
+003: 8c040010
+004: 00242821
+005: 00453021
+006: 00223823
+007: 70224002
+008: 70684802
+009: 14220001
+00a: 00000000
+00b: 00225021
+00c: 154a0001
+00d: 00000000
+00e: 00000000
+00f: 00000001
+010: 00000002
+
+behavioral simulation of simple MIPS-like machine
+  (all values are shown in hexadecimal)
+
+pc   result of instruction at that location
+000: addiu - register r[1] now contains 0x00000080
+001: addiu - register r[2] now contains 0x00000082
+002: lw    - register r[3] now contains 0x00000001
+003: lw    - register r[4] now contains 0x00000002
+004: addu  - register r[5] now contains 0x00000082
+005: addu  - register r[6] now contains 0x00000104
+006: subu  - register r[7] now contains 0xfffffffe
+007: mul   - register r[8] now contains 0x00004100
+008: mul   - register r[9] now contains 0x00004100
+009: bne   - branch taken to 0x0000000b
+00b: addu  - register r[a] now contains 0x00000102
+00c: bne  - branch untaken
+00d: hlt
+
+contents of memory
+addr value
+000: 24010080
+001: 24020082
+002: 8c03000f
+003: 8c040010
+004: 00242821
+005: 00453021
+006: 00223823
+007: 70224002
+008: 70684802
+009: 14220001
+00a: 00000000
+00b: 00225021
+00c: 154a0001
+00d: 00000000
+00e: 00000000
+00f: 00000001
+010: 00000002
+
+instruction class counts (omits hlt instruction)
+  alu ops             8
+  loads/stores        2
+  jumps/branches      2
+total                12
+
+memory access counts (omits hlt instruction)
+  inst. fetches      12
+  loads               2
+  stores              0
+total                14
+
+transfer of control counts
+  jumps               0
+  jump-and-links      0
+  taken branches      1
+  untaken branches    1
+total                 2
