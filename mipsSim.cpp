@@ -92,9 +92,7 @@ void addu()
 	checkRegZero(rd);
   registerArray[rd] = registerArray[rs] + registerArray[rt];
   numAlu++;
-  cout << setw(3) << setfill('0') << hex << (pc - 1) << ": addu  - register r[";
-	cout << rd << "] now contains " << "0x" << hex << setw(8) << setfill('0');
-	cout << registerArray[rd] << "\r\n";
+  cout << setw(3) << setfill('0') << hex << (pc - 1) << ": addu  ";
 }
 
 //Adds the number in rs to the immediately given value, then stores in rt
@@ -103,9 +101,7 @@ void addiu()
 	checkRegZero(rt);
   registerArray[rt] = registerArray[rs] + sign_ext;
   numAlu++;
-   cout << setw(3) << setfill('0') << hex << (pc - 1) << ": addiu - register r[";
-	 cout << rt << "] now contains " << "0x" << hex << setw(8) << setfill('0');
-	 cout << registerArray[rt] << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": addiu ";
 }
 
 //Performs bitwise AND operation rs*rt, then stores in rd
@@ -187,7 +183,7 @@ void bne()
 		pc += sign_ext;
 		numTakenBranches++;
 		pc = pc & 0xffff;
-		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": bne   - branch taken to " << "0x" << hex << setw(8) << setfill('0') << pc << "\r\n";
+		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": bne   ";
 
 	}
 	else
@@ -202,7 +198,7 @@ void hlt()
 {
 	halt = 1;
 	numInstFetch--;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": hlt" << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": hlt   " << "\r\n";
   return;
 }
 
@@ -265,7 +261,7 @@ void lw()
 	checkRegZero(rt);
 	registerArray[rt] = ram[rs+sign_ext];
 	numLoads++;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": lw    - register r[" << rt << "] now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rt] << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": lw    ";
 
 }
 
@@ -275,7 +271,7 @@ void mul()
 	checkRegZero(rd);
 	registerArray[rd] = registerArray[rs]*registerArray[rt];
 	numAlu++;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": mul   - register r[" << rd << "] now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rd] << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": mul   ";
 
 }
 
@@ -373,8 +369,7 @@ void subu()
 	registerArray[rd] = registerArray[rs]  - registerArray[rt];
 	numAlu++;
 
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": subu  - register r[" << rd << "]";
-	cout << " now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rd] << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": subu  ";
 }
 
 //Stores the word in r[t] at registerArray[registerArray[rs] + sign_imm
