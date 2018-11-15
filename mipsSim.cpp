@@ -198,7 +198,7 @@ void hlt()
 {
 	halt = 1;
 	numInstFetch--;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": hlt   " << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": hlt   ";
   return;
 }
 
@@ -251,7 +251,7 @@ void lui()
 	checkRegZero(rt);
 	registerArray[rt] = sign_ext << 16;
 	numAlu++;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": lui   - register r[" << rt << "] now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rt] << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": lui   ";
 
 }
 
@@ -281,8 +281,7 @@ void nor()
 	checkRegZero(rd);
 	registerArray[rd] = ~(registerArray[rs] | registerArray[rt]);
 	numAlu++;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": nor   - register r[" << rd << "] now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rd] << "\r\n";
-
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": nor   ";
 }
 
 //or's register rs and register rt and places the result into rd
@@ -291,8 +290,7 @@ void _or()
 	checkRegZero(rd);
 	registerArray[rd] = registerArray[rs] | registerArray[rt];
 	numAlu++;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": or    - register r[" << rd << "] now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rd] << "\r\n";
-
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": or    ";
 }
 
 //Shifts register rt left logically by shift and stores the result in rd
@@ -308,8 +306,7 @@ void sll()
 	checkRegZero(rd);
 	registerArray[rd] = registerArray[rt] << shift;
 	numAlu++;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": sll   - register r[" << rd << "] now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rd] << "\r\n";
-
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": sll   ";
 }
 
 //If register rs < sign_ext, then set register rt to 1 else set to 0
@@ -325,8 +322,7 @@ void slti()
 		registerArray[rd] = 0;
 	}
 	numAlu++;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": slti  - register r[" << rd << "] now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rd] << "\r\n";
-
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": slti  ";
 }
 
 
@@ -343,8 +339,7 @@ void sra()
 		registerArray[rd] = registerArray[rd] | (((1 << (shift + 1)) - 1) << (31 - shift));
 	}
 	numAlu++;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": sra   - register r[" << rd << "] now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rd] << "\r\n";
-
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": sra   ";
 }
 
 
@@ -358,8 +353,7 @@ void srl()
 	registerArray[rd] = (unsigned int )(registerArray[rt]) >> shift;
 	numAlu++;
 
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": srl   - register r[" << rd << "]";
-	cout << " now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rd] << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": srl   ";
 }
 
 //Subtract register rt from register rs and save the result into rd
@@ -378,8 +372,7 @@ void sw()
 	ram[registerArray[rs] + sign_ext] = registerArray[rt];
 	numStores++;
 
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": sw    - register r[" << rt << "]";
-	cout << " value stored in memory" << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": sw    ";
 }
 
 //Exclusive or's registerArray[rs] and registerArray[rt] then stores the result in registerArray[rd]
@@ -389,8 +382,7 @@ void _xor()
 	registerArray[rd] = registerArray[rs] ^ registerArray[rt];
 	numAlu++;
 
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": xor   - register r[" << rd << "]";
-	cout << " now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rd] << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": xor   ";
 }
 
 
@@ -401,8 +393,7 @@ void xori()
 	registerArray[rt] = registerArray[rs] ^ sign_ext;
 	numAlu++;
 
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": xori  - register r[" << rt << "]";
-	cout << " now contains " << "0x" << hex << setw(8) << setfill('0') << registerArray[rt] << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": xori  ";
 }
 
 
@@ -610,7 +601,6 @@ void printMemory()
 void writeOutput()
 {
 	cout << "\r\n";
-	printMemory();
 	cout << dec;
 	int numJumpsAndBranches = numTakenBranches + numUnTakenBranches + numJumps + numJumpsAndLinks;
 	int numLoadsAndStores = numStores + numLoads;
@@ -653,15 +643,15 @@ void gatherInput()
 	}
 	printMemory();
 	cout << "\r\n";
-	cout << "behavioral simulation of simple MIPS-like machine\r\n";
+	cout << "simple MIPS-like machine with instruction pairing\r\n";
 	cout << "  (all values are shown in hexadecimal)\r\n";
 	cout << "\r\n";
-	cout << "pc   result of instruction at that location\r\n";
+	cout << "instruction pairing analysis\r\n";
 }
 
 
-//Checks for data dependencies
-void checkConflicts(int ir2, int storeRegister)
+//Checks for RAW data dependency
+bool checkRAW(int ir2, int storeRegister)
 {
 	int rs2, rt2;
 
@@ -675,13 +665,48 @@ void checkConflicts(int ir2, int storeRegister)
 		{
 			doubleIssue = false;
 			issueStatement = "// data dependency stop";
+			return true;
+		}
+		else
+		{
+			issueStatement += " (also data dep.)";
+			return true;
+		}
+	}
+	return false;
+
+}
+
+//Checks for RAW data dependency
+void checkWAW(int ir2, int storeRegister, int opcode2)
+{
+	int checkReg;
+	//Tries to find opcode1 in the map
+	if(opcodeMap.find(opcode2) != opcodeMap.end())
+	{
+		//Finds if the function is I-type, if it is, sets storeRegister to rt
+		if(opcodeMap.find(opcode2)->second.compare("r"))
+		{
+			checkReg = (ir2 >> 11) & 0x1f; // clamps to the 5 bit rd
+		}
+		//Otherwise, storeRegister is set to rd
+		else
+		{
+			checkReg = (ir2 >> 16) & 0x001f; // clamp to the 5 bit rt
+		}
+	}
+	if(checkReg == storeRegister)
+	{
+		if(doubleIssue)
+		{
+			doubleIssue = false;
+			issueStatement = "// data dependency stop";
 		}
 		else
 		{
 			issueStatement += " (also data dep.)";
 		}
 	}
-
 }
 
 void checkStructural(int ir2, int opcode1, int opcode2)
@@ -690,7 +715,7 @@ void checkStructural(int ir2, int opcode1, int opcode2)
 	//where both slots would be lw/sw instructions
 	if(opcode1 == 0x23 || opcode1 == 0x2b)
 	{
-		if(opcode1 == 0x23 || opcode1 == 0x2b)
+		if(opcode2 == 0x23 || opcode2 == 0x2b)
 		{
 			doubleIssue = false;
 			issueStatement = "// structural stop";
@@ -738,6 +763,42 @@ void checkControl(int ir2, int opcode1, int opcode2)
 	}
 }
 
+void checkDataHazard(int ir2, int opcode1, int opcode2)
+{
+	bool found = false;
+	//Tries to find opcode1 in the map
+	if(opcodeMap.find(opcode1) != opcodeMap.end() && opcode1 != 0x2b)
+	{
+		//Finds if the function is I-type, if it is, sets storeRegister to rt
+		if(opcodeMap.find(opcode1)->second.compare("r"))
+		{
+			found = checkRAW(ir2, rt);
+		}
+		//Otherwise, storeRegister is set to rd
+		else
+		{
+			found = checkRAW(ir2, rd);
+		}
+	}
+	if(!found)
+	{
+		//Tries to find opcode1 in the map
+		if(opcodeMap.find(opcode2) != opcodeMap.end() && opcode1 != 0x2b)
+		{
+			//Finds if the function is I-type, if it is, sets storeRegister to rt
+			if(opcodeMap.find(opcode2)->second.compare("r"))
+			{
+				checkWAW(ir2, rt, opcode2);
+			}
+			//Otherwise, storeRegister is set to rd
+			else
+			{
+				checkWAW(ir2, rd, opcode2);
+			}
+		}
+	}
+}
+
 void (* determineSecondSlot() ) ()
 {
 	int ir2, rd2,	rs2, rt2,	shift2,	funct2,	pc2 = pc, storeRegister;
@@ -753,20 +814,7 @@ void (* determineSecondSlot() ) ()
 
 	checkControl(ir2, opcode1, opcode2);
 
-	//Tries to find opcode1 in the map
-	if(opcodeMap.find(opcode1) != opcodeMap.end())
-	{
-		//Finds if the function is R-type, if it is, sets storeRegister to rd
-		if(opcodeMap.find(opcode1)->second.compare("r"))
-		{
-			checkConflicts(ir2, rd);
-		}
-		//Otherwise, storeRegister is set to rt
-		else
-		{
-			checkConflicts(ir2, rt);
-		}
-	}
+	checkDataHazard(ir2, opcode1, opcode2);
 
 
 }
@@ -793,12 +841,15 @@ int main()
 			fetch();
 			inst2 = decode();
 			(*inst2)();
+			//Fixes the spacing
+			cout << "  ";
 		}
 		//Otherwise, correct the print spacing
 		else
 		{
-			cout << "  " << issueStatement << "\r\n";
+			cout << "             ";
 		}
+		cout << issueStatement << "\r\n";
 		if(zeroAttempt)
 		{
 			zeroAttempt = false;
