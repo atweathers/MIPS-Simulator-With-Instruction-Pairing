@@ -5,6 +5,7 @@
 #include <string>
 #include <iomanip>
 #include <climits>
+#include <math.h>
 using namespace std;
 
 #define RAM_SIZE 1024
@@ -12,7 +13,7 @@ using namespace std;
 
 
 // Authors: Andrew Weathers and Nicholas Muenchen
-// Date: 21 September 2018
+// Date: 19 November 2018
 // Purpose: Simulate a simplified MIPS-like
 //			instruction set
 
@@ -43,8 +44,15 @@ unsigned int mar,
 			 registerArray[NUM_REGISTERS],
 			 ram[RAM_SIZE];
 
-int 	 sign_ext,
+int 		 issues = 0,  
+			 doubleIssues = 0,
+			 controlStops = 0,
+			 structStops = 0,
+			 dataStops = 0,
+			 sign_ext,
 			 ram_end = 0;
+
+double 		 percentDouble=0;
 
 bool   zeroAttempt = false;
 bool	 doubleIssue = false;
@@ -624,10 +632,17 @@ void writeOutput()
 	cout << "  jump-and-links     " << setfill(' ') << setw(2) << numJumpsAndLinks << "\r\n";
 	cout << "  taken branches     " << setfill(' ') << setw(2) << numTakenBranches << "\r\n";
 	cout << "  untaken branches   " << setfill(' ') << setw(2) << numUnTakenBranches << "\r\n";
-	cout << "total                " << setfill(' ') << setw(2) << numJumpsAndBranches << "\r\n";
+	cout << "total                " << setfill(' ') << setw(2) << numJumpsAndBranches << "\r\n" << "\r\n";
 
+	cout << "instruction pairing counts (includes hlt instruction)" << "\r\n";
+	cout << "  issue cycles       " << setfill(' ') << setw(2) << issues << "\r\n";
+	cout << "  double issues      " << setfill(' ') << setw(2) << doubleIssues; 
+	cout << " ( " << setprecision(3) << percentDouble << " percent of issue cycles)" << "\r\n";
 
-
+	cout << "  control stops      " << setfill(' ') << setw(2) << controlStops << "\r\n";
+	cout << "  structural stops   " << setfill(' ') << setw(2) << structStops;
+	cout << " (" << "0 of which would also stop on a data dep.)" << "\r\n";
+	cout << "  data dep. stops    " << setfill(' ') << setw(2) << dataStops << "\r\n";
 }
 
 
@@ -661,6 +676,8 @@ bool checkRAW(int ir2, int storeRegister)
 	//Checks for a data dependency
 	if(rs2 == storeRegister || rt2 == storeRegister)
 	{
+		dataStops++; // For performance analysis
+
 		if(doubleIssue)
 		{
 			doubleIssue = false;
@@ -697,6 +714,8 @@ void checkWAW(int ir2, int storeRegister, int opcode2)
 	}
 	if(checkReg == storeRegister)
 	{
+		dataStops++; // For performance analysis
+
 		if(doubleIssue)
 		{
 			doubleIssue = false;
@@ -717,6 +736,7 @@ void checkStructural(int ir2, int opcode1, int opcode2)
 	{
 		if(opcode2 == 0x23 || opcode2 == 0x2b)
 		{
+			structStops++;
 			doubleIssue = false;
 			issueStatement = "// structural stop";
 		}
@@ -730,6 +750,7 @@ void checkStructural(int ir2, int opcode1, int opcode2)
 			int func2 = ir2 & 0x2f; // clamps to the 6 bit funct
 			if(func2 == 0x02)
 			{
+				structStops++;
 				doubleIssue = false;
 				issueStatement = "// structural stop";
 			}
@@ -743,12 +764,14 @@ void checkControl(int ir2, int opcode1, int opcode2)
 	// blez, or bne
 	if(opcode1 == 0x04 || opcode1 == 0x07 || opcode1 == 0x06 || opcode1 == 0x05)
 	{
+		controlStops++;
 		doubleIssue = false;
 		issueStatement = "// control stop";
 	}
 	//Checks for control stop occuring when issue slot one holds hlt, j, or jal
 	if(ir == 0 || opcode1 == 0x02 || opcode1 == 0x03)
 	{
+		controlStops++;
 		doubleIssue = false;
 		issueStatement = "// control stop";
 	}
@@ -757,6 +780,7 @@ void checkControl(int ir2, int opcode1, int opcode2)
 	{
 		if(funct == 0x09 || funct == 0x08)
 		{
+			controlStops++;
 			doubleIssue = false;
 			issueStatement = "// control stop";
 		}
@@ -816,7 +840,10 @@ void (* determineSecondSlot() ) ()
 
 	checkDataHazard(ir2, opcode1, opcode2);
 
+	issues++;
+	if(doubleIssue) doubleIssues++;
 
+	percentDouble = 100 * (double)doubleIssues / issues;																														
 }
 
 
