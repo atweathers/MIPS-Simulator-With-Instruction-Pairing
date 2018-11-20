@@ -57,6 +57,7 @@ int		numIssueCycles = 0,
 
 bool   zeroAttempt = false;
 bool	 doubleIssue = false;
+bool controlStopFound = false;
 
 string issueStatement;
 
@@ -699,7 +700,7 @@ void printPairingCounts()
 
 	cout << "  double issues   ";
 	cout << setw(5) << setfill(' ') << numDoubleIssue;
-	cout << " ( " << setprecision(3) << percentDoubleIssue;
+	cout << " ( " << setprecision(3) << showpoint << percentDoubleIssue;
 	cout << " percent of issue cycles)";
 	cout << "\r\n";
 
@@ -721,7 +722,6 @@ void printPairingCounts()
 
 void writeOutput()
 {
-	cout << "\r\n";
 	cout << dec;
 	int numJumpsAndBranches = numTakenBranches + numUnTakenBranches;
 	numJumpsAndBranches += numJumps + numJumpsAndLinks;
@@ -855,19 +855,22 @@ void checkStructural(int ir2, int opcode1, int opcode2)
 
 void checkControl(int ir2, int opcode1, int opcode2)
 {
+	controlStopFound = false;
 	//Checks for control stop occuring when issue slot one holds beq, bgtz,
 	// blez, or bne
 	if(opcode1 == 0x04 || opcode1 == 0x07 || opcode1 == 0x06 || opcode1 == 0x05)
 	{
 		numControlStops++;
 		doubleIssue = false;
+		controlStopFound = true;
 		issueStatement = "// control stop";
 	}
-	//Checks for control stop occuring when issue slot one holds hlt, j, or jal
-	if(ir == 0 || opcode1 == 0x02 || opcode1 == 0x03)
+	//Checks for control stop occuring when issue slot one holds j or jal
+	if(opcode1 == 0x02 || opcode1 == 0x03)
 	{
 		numControlStops++;
 		doubleIssue = false;
+		controlStopFound = true;
 		issueStatement = "// control stop";
 	}
 	//Checks for control stop occuring when issue slot one holds jr or jalr
@@ -877,6 +880,7 @@ void checkControl(int ir2, int opcode1, int opcode2)
 		{
 			numControlStops++;
 			doubleIssue = false;
+			controlStopFound = true;
 			issueStatement = "// control stop";
 		}
 	}
@@ -921,6 +925,15 @@ void checkDataHazard(int ir2, int opcode1, int opcode2)
 void determineSecondSlot()
 {
 	int ir2, rd2,	rs2, rt2,	shift2,	funct2,	pc2 = pc, storeRegister;
+	//Checks for a halt in issue slot one, if there is one. Then don't continue
+	if(ir == 0)
+	{
+		numControlStops++;
+		doubleIssue = false;
+		controlStopFound = true;
+		issueStatement = "// control stop";
+		return;
+	}
 	mar = pc2;
 	mdr = ram[mar];
 	ir2 = mdr;
@@ -932,10 +945,10 @@ void determineSecondSlot()
 	checkStructural(ir2, opcode1, opcode2);
 
 	checkControl(ir2, opcode1, opcode2);
-
-	checkDataHazard(ir2, opcode1, opcode2);
-
-
+	if(!controlStopFound)
+	{
+		checkDataHazard(ir2, opcode1, opcode2);
+	}
 }
 
 
