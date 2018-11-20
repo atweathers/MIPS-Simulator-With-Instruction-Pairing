@@ -135,12 +135,12 @@ void beq()
 		pc += sign_ext;
 		pc = pc & 0xffff;
 		numTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": beq   - branch taken to " << "0x" << hex << setw(8) << setfill('0') << pc << "\r\n";
+		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": beq   ";
 	}
 	else
 	{
 		numUnTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": beq   - branch untaken" << "\r\n";
+		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": beq   ";
 	}
 
 
@@ -155,12 +155,12 @@ void bgtz()
 		pc += sign_ext;
 		pc = pc & 0xffff;
 		numTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": bgtz  - branch taken to " << "0x" << hex << setw(8) << setfill('0') << pc << "\r\n";
+		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": bgtz  ";
 	}
 	else
 	{
 		numUnTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": bgtz  - branch untaken" << "\r\n";
+		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": bgtz  ";
 	}
 }
 
@@ -173,13 +173,13 @@ void blez()
 		pc += sign_ext;
 		pc = pc & 0xffff;
 		numTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": blez  - branch taken to " << "0x" << hex << setw(8) << setfill('0') << pc << "\r\n";
+		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": blez  ";
 
 	}
 	else
 	{
 		numUnTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": blez  - branch untaken" << "\r\n";
+		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": blez  ";
 	}
 }
 
@@ -198,7 +198,7 @@ void bne()
 	else
 	{
 		numUnTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": bne  - branch untaken" << "\r\n";
+		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": bne   ";
 	}
 }
 
@@ -217,7 +217,7 @@ void j()
 	int print_pc = pc;
 	pc = sign_ext;
 	numJumps++;
-	cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": j     - jump to " << "0x" << hex << setw(8) << setfill('0') << pc << "\r\n";
+	cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": j     ";
 }
 
 //Jump and link jumps, but also stores pc
@@ -227,7 +227,7 @@ void jal()
 	registerArray[31] = pc;
 	pc = sign_ext;
 	numJumpsAndLinks++;
-	cout << setw(3) << setfill('0') << hex << registerArray[31] - 1 << ": jal   - jump to " << "0x" << hex << setw(8) << setfill('0') << pc << "\r\n";
+	cout << setw(3) << setfill('0') << hex << registerArray[31] - 1 << ": jal   ";
 }
 
 //Store incremented pc in rd and jump to rs.
@@ -237,7 +237,7 @@ void jalr()
 	registerArray[rd] = pc;
 	pc = registerArray[rs];
 	numJumpsAndLinks++;
-	cout << setw(3) << setfill('0') << hex << registerArray[rd] - 1 << ": jalr  - jump to " << "0x" << hex << setw(8) << setfill('0') << pc << "\r\n";
+	cout << setw(3) << setfill('0') << hex << registerArray[rd] - 1 << ": jalr  ";
 
 
 }
@@ -249,7 +249,7 @@ void jr()
 	int print_pc = pc - 1;
 	pc = registerArray[rs];
 	numJumps++;
-	cout << setw(3) << setfill('0') << hex << print_pc << ": jr    - jump to " << "0x" << hex << setw(8) << setfill('0') << pc << "\r\n";
+	cout << setw(3) << setfill('0') << hex << print_pc << ": jr    ";
 
 }
 
