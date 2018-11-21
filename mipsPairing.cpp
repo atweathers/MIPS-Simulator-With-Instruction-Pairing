@@ -11,7 +11,6 @@ using namespace std;
 #define RAM_SIZE 1024
 #define NUM_REGISTERS 32
 
-
 // Authors: Andrew Weathers and Nicholas Muenchen
 // Date: 20 November 2018
 // Purpose: Simulate a paired MIPS like instruction set
@@ -54,7 +53,6 @@ int			 numIssueCycles = 0,
 			 numDataDependencyStops = 0,
 			 numDataAndStructuralStops = 0;
 
-
 bool zeroAttempt = false;
 bool doubleIssue = false;
 bool controlStopFound = false;
@@ -67,7 +65,6 @@ void initiliazeRam(){
 	for(int i = 0; i < RAM_SIZE; i++)
 		ram[i] = INT_MAX;
 }
-
 
 void fillMap(){
  	opcodeMap[0x00] = "r";
@@ -116,7 +113,6 @@ void _and(){
 	cout << rd << "] now contains " << "0x" << hex << setw(8) << setfill('0'); 
 	cout << registerArray[rd] << "\r\n";
 }
-
 
 //Branch is rs is equal to rt. Branches to immediate value.
 void beq(){
@@ -291,7 +287,6 @@ void slti(){
 	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": slti  ";
 }
 
-
 //Logically shifts register rt right by shift and stores the result in rd, 
 //fills with ones or zeroes depending on sign
 /////////////////////////////////
@@ -307,7 +302,6 @@ void sra(){
 	numAlu++;
 	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": sra   ";
 }
-
 
 //Logically shifts register rt right by shift and stores the result in rd, fills with zeroes
 /////////////////////////////////
@@ -348,7 +342,6 @@ void _xor(){
 	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": xor   ";
 }
 
-
 //Exclusive or's registerArray[rs] with sign_ext and stores the result in registerArray[rt]
 void xori(){
 	checkRegZero(rt);
@@ -357,9 +350,6 @@ void xori(){
 
 	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": xori  ";
 }
-
-
-
 
 //Fetches the next instruction for first issue slot.
 void fetch(){
@@ -377,7 +367,6 @@ rd = (ir >> 11) & 0x1f; // clamps to the 5 bit rd
 shift = (ir >> 6) & 0x1f; // clamps to the 5 bit shift
 rs = ir & 0x2f; // clamps to the 6 bit funct
 */
-
 void sign_extend(){
 	if((sign_ext >> 15) & 1){
 		sign_ext = 0xFFFF - sign_ext + 1;
@@ -454,7 +443,6 @@ void (*other_func())(){
 }
 
 //Right shift by 26 to isolate the opcode
-
 void ( *decode() )(){
 	unsigned int opcode = (ir >> 26) & 0x3f; // clamp to 6-bit opcode field
 
@@ -597,7 +585,6 @@ void writeOutput(){
 	printPairingCounts();
 }
 
-
 //Store terminal input into ram
 void gatherInput(){
 	unsigned int input;
@@ -613,7 +600,6 @@ void gatherInput(){
 	cout << "\r\n";
 	cout << "instruction pairing analysis\r\n";
 }
-
 
 //Checks for RAW data dependency
 bool checkRAW(int ir2, int storeRegister){
