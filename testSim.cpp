@@ -57,7 +57,6 @@ int		numIssueCycles = 0,
 
 bool   zeroAttempt = false;
 bool	 doubleIssue = false;
-bool controlStopFound = false;
 
 string issueStatement;
 
@@ -136,12 +135,12 @@ void beq()
 		pc += sign_ext;
 		pc = pc & 0xffff;
 		numTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": beq   ";
+		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": beq   - branch taken to " << "0x" << hex << setw(8) << setfill('0') << pc << "\r\n";
 	}
 	else
 	{
 		numUnTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": beq   ";
+		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": beq   " << "\r\n";
 	}
 
 
@@ -156,12 +155,12 @@ void bgtz()
 		pc += sign_ext;
 		pc = pc & 0xffff;
 		numTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": bgtz  ";
+		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": bgtz  " << setw(8);
 	}
 	else
 	{
 		numUnTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": bgtz  ";
+		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": bgtz  " << setw(8);
 	}
 }
 
@@ -174,13 +173,13 @@ void blez()
 		pc += sign_ext;
 		pc = pc & 0xffff;
 		numTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": blez  ";
+		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": blez  " << setw(8);
 
 	}
 	else
 	{
 		numUnTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": blez  ";
+		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": blez  " << setw(8);
 	}
 }
 
@@ -193,13 +192,13 @@ void bne()
 		pc += sign_ext;
 		numTakenBranches++;
 		pc = pc & 0xffff;
-		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": bne   ";
+		cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": bne   " << setw(8);
 
 	}
 	else
 	{
 		numUnTakenBranches++;
-		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": bne   ";
+		cout << setw(3) << setfill('0') << hex << (pc - 1) << ": bne   " << setw(8);
 	}
 }
 
@@ -208,7 +207,7 @@ void hlt()
 {
 	halt = 1;
 	numInstFetch--;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": hlt   ";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": hlt   " << setw(8);
   return;
 }
 
@@ -218,7 +217,7 @@ void j()
 	int print_pc = pc;
 	pc = sign_ext;
 	numJumps++;
-	cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": j     ";
+	cout << setw(3) << setfill('0') << hex << (print_pc - 1) << ": j   " << setw(8) << setfill('0');
 }
 
 //Jump and link jumps, but also stores pc
@@ -228,7 +227,7 @@ void jal()
 	registerArray[31] = pc;
 	pc = sign_ext;
 	numJumpsAndLinks++;
-	cout << setw(3) << setfill('0') << hex << registerArray[31] - 1 << ": jal   ";
+	cout << setw(3) << setfill('0') << hex << registerArray[31] - 1 << ": jal  " << setw(8);
 }
 
 //Store incremented pc in rd and jump to rs.
@@ -238,7 +237,7 @@ void jalr()
 	registerArray[rd] = pc;
 	pc = registerArray[rs];
 	numJumpsAndLinks++;
-	cout << setw(3) << setfill('0') << hex << registerArray[rd] - 1 << ": jalr  ";
+	cout << setw(3) << setfill('0') << hex << registerArray[rd] - 1 << ": jalr  " << setw(8);
 
 
 }
@@ -250,7 +249,7 @@ void jr()
 	int print_pc = pc - 1;
 	pc = registerArray[rs];
 	numJumps++;
-	cout << setw(3) << setfill('0') << hex << print_pc << ": jr    ";
+	cout << setw(3) << setfill('0') << hex << print_pc << ": jr   " << setw(8);
 
 }
 
@@ -271,7 +270,7 @@ void lw()
 	checkRegZero(rt);
 	registerArray[rt] = ram[rs+sign_ext];
 	numLoads++;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": lw    ";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": lw    " << setw(8) << setfill('0');
 
 }
 
@@ -281,7 +280,7 @@ void mul()
 	checkRegZero(rd);
 	registerArray[rd] = registerArray[rs]*registerArray[rt];
 	numAlu++;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": mul   ";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": mul   " << setw(8) << setfill('0');
 
 }
 
@@ -291,7 +290,7 @@ void nor()
 	checkRegZero(rd);
 	registerArray[rd] = ~(registerArray[rs] | registerArray[rt]);
 	numAlu++;
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": nor   ";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": nor   " << setw(8) << setfill('0');
 }
 
 //or's register rs and register rt and places the result into rd
@@ -382,7 +381,7 @@ void sw()
 	ram[registerArray[rs] + sign_ext] = registerArray[rt];
 	numStores++;
 
-	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": sw    ";
+	cout << setw(3) << setfill('0') << hex << (pc - 1) << ": sw    " << setw(8);
 }
 
 //Exclusive or's registerArray[rs] and registerArray[rt] then stores the result in registerArray[rd]
@@ -700,7 +699,7 @@ void printPairingCounts()
 
 	cout << "  double issues   ";
 	cout << setw(5) << setfill(' ') << numDoubleIssue;
-	cout << " ( " << setprecision(3) << showpoint << percentDoubleIssue;
+	cout << " ( " << setprecision(3) << percentDoubleIssue;
 	cout << " percent of issue cycles)";
 	cout << "\r\n";
 
@@ -722,6 +721,7 @@ void printPairingCounts()
 
 void writeOutput()
 {
+	cout << "\r\n";
 	cout << dec;
 	int numJumpsAndBranches = numTakenBranches + numUnTakenBranches;
 	numJumpsAndBranches += numJumps + numJumpsAndLinks;
@@ -855,22 +855,19 @@ void checkStructural(int ir2, int opcode1, int opcode2)
 
 void checkControl(int ir2, int opcode1, int opcode2)
 {
-	controlStopFound = false;
 	//Checks for control stop occuring when issue slot one holds beq, bgtz,
 	// blez, or bne
 	if(opcode1 == 0x04 || opcode1 == 0x07 || opcode1 == 0x06 || opcode1 == 0x05)
 	{
 		numControlStops++;
 		doubleIssue = false;
-		controlStopFound = true;
 		issueStatement = "// control stop";
 	}
-	//Checks for control stop occuring when issue slot one holds j or jal
-	if(opcode1 == 0x02 || opcode1 == 0x03)
+	//Checks for control stop occuring when issue slot one holds hlt, j, or jal
+	if(ir == 0 || opcode1 == 0x02 || opcode1 == 0x03)
 	{
 		numControlStops++;
 		doubleIssue = false;
-		controlStopFound = true;
 		issueStatement = "// control stop";
 	}
 	//Checks for control stop occuring when issue slot one holds jr or jalr
@@ -880,7 +877,6 @@ void checkControl(int ir2, int opcode1, int opcode2)
 		{
 			numControlStops++;
 			doubleIssue = false;
-			controlStopFound = true;
 			issueStatement = "// control stop";
 		}
 	}
@@ -925,15 +921,6 @@ void checkDataHazard(int ir2, int opcode1, int opcode2)
 void determineSecondSlot()
 {
 	int ir2, rd2,	rs2, rt2,	shift2,	funct2,	pc2 = pc, storeRegister;
-	//Checks for a halt in issue slot one, if there is one. Then don't continue
-	if(ir == 0)
-	{
-		numControlStops++;
-		doubleIssue = false;
-		controlStopFound = true;
-		issueStatement = "// control stop";
-		return;
-	}
 	mar = pc2;
 	mdr = ram[mar];
 	ir2 = mdr;
@@ -945,10 +932,10 @@ void determineSecondSlot()
 	checkStructural(ir2, opcode1, opcode2);
 
 	checkControl(ir2, opcode1, opcode2);
-	if(!controlStopFound)
-	{
-		checkDataHazard(ir2, opcode1, opcode2);
-	}
+
+	checkDataHazard(ir2, opcode1, opcode2);
+
+
 }
 
 
@@ -975,8 +962,6 @@ int main()
 			fetch();
 			inst2 = decode();
 			(*inst2)();
-			//Fixes the spacing
-			cout << "  ";
 		}
 		//Otherwise, correct the print spacing
 		else
